@@ -35,7 +35,7 @@
 		Link to webpage: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
 		
 		<br>
-
+			
 		Link to GitHub repository: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
 
 		<figure>
@@ -51,29 +51,33 @@
 		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
 
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		To rasterize the triangle, we created boundaries based on three line equations between P0, P1, P2 points. 
+		To ensure that our algorithm is efficient we set bounds. Bounds were set based on the max and min of all the x and y points
+		when iterating over the possible positions along the triangle. If the point lies inbetween the lines we 
+		fill the pixel in with the fill_pixel function. 
+		We additionally ensured that the area computed is not negative by checking and flipping the sign of the lines effectively ensuring that any winding order works.
 
 		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="task1/test3.png" width="400px"  height="400px"/>
+				  <figcaption>This image displays a Dragon after rasterizing the bounds</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="task1/test4.png" width="400px"  height="400px"/>
+				  <figcaption>Multiple triangles have different colors because have its unique color</figcaption>
 				</td>
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="task1/test5.png" width="400px" height="400px"/>
+				  <figcaption>Cube in 3D.</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="lion.jpg" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="task1/test6.png" width="400px"  height="400px"/>
+				  <figcaption>Star patterns.</figcaption>
 				</td>
 			  </tr>
 			</table>
