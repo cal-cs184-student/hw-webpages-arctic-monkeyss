@@ -36,7 +36,7 @@
 		
 		<br>
 			
-		Link to GitHub repository: <a href="https://github.com/cal-cs184-student/sp25-hw1-arctic-monkeys">https://github.com/cal-cs184-student/sp25-hw1-arctic-monkeys</a>
+		Link to GitHub repository: <a href="https://github.com/cal-cs184-student/hw-webpages-arctic-monkeyss">https://github.com/cal-cs184-student/hw-webpages-arctic-monkeyss</a>
 
 		<figure>
 			<img src="lion.jpg" alt="Lion" style="width:50%"/>
@@ -51,11 +51,11 @@
 		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
 
 		<h2>Task 1: Drawing Single-Color Triangles</h2>
-		To rasterize the triangle, we created boundaries based on three line equations between P0, P1, P2 points. 
-		To ensure that our algorithm is efficient we set bounds. Bounds were set based on the max and min of all the x and y points
-		when iterating over the possible positions along the triangle. If the point lies inbetween the lines we 
-		fill the pixel in with the fill_pixel function. 
-		We additionally ensured that the area computed is not negative by checking and flipping the sign of the lines effectively ensuring that any winding order works.
+		To rasterize the triangle, we created boundaries based on three line equations between the points P0, P1, and P2. 
+		To ensure that our algorithm was efficient, we set bounds based on the max and min of all the x and y values given from the three points.
+		Thus, when iterating over x and y values, we only iterated over the possible positions that were along the triangle (the bounds we created). If the point lied inbetween the lines we 
+		filled the pixel in with the corresponding color of that triangle by calling the fill_pixel function. We additionally ensured that if the area of the triangle computed was negative, meaning our line tests would fail, we flipped the sign 
+		of each of our lines effectively ensuring that any winding order works.
 
 		
 		<div style="display: flex; flex-direction: column; align-items: center;">
@@ -87,27 +87,27 @@
 		<br>
 		
 		<h2>Task 2: Antialiasing by Supersampling</h2>
-		Our sample_buffer is a 1-D array that holds the color of each sub-pixel when supersampling. 
-		We ordered this array in a way so that each of the sub-pixels of the same pixel are all next to each other. 
+		Our sample_buffer is a 1-D array that holds the color of each sub-pixel/sample when supersampling. 
+		We ordered the array in a way so that each of the sub-pixels/samples of the same pixel are all next to each other. 
 		For example, say we had a 2x2 screen of pixels and a sampling rate of 4. Then the first four colors in our 
-		sample_buffer represent the four sub-pixels of the pixel located on the top left (0,0), the next 4 colors 
-		represent the the four sub-pixels of the pixel located on the top right (1,0), and so on. As for our algorithm, 
-		the main premise is that we first set the size of the sample_buffer to accommodate for the sampling rate of the 
-		supersampling (it would now have a size of width * height * sampling_rate). We then fill out the sample_buffer with 
+		sample_buffer represent the four sub-pixels/samples of the pixel located on the top left, (0,0), the next 4 colors 
+		represent the the four sub-pixels/samples of the pixel located on the top right (1,0), and so on. As for our algorithm, 
+		the main premise is that we first set the size of the sample_buffer to accommodate for the sampling rate of  
+		supersampling (our sample_buffer would now have a size of width * height * sampling_rate). We then fill out the sample_buffer with 
 		the corresponding color of the triangle within the rasterize_triangle method. We do so by using the line equation 
-		tests with each side of the triangle with logic similar to that of task 1. Once the sample_buffer is filled to convert 
-		it back to the frame buffer so that it is properly displayed we took the average of the sub-pixels of a pixel and used 
-		that average to determine the color of the pixel. To ensure that points and lines render correctly with the implementation of 
-		supersampling we modified the fill_pixel method to account for the new sizing of the modified sample_buffer. Thus the rasterization 
+		tests with each side of the triangle with logic similar to that of task 1. Once the sample_buffer has been properly filled up, 
+		in order to convert it back to the frame buffer, so that it is properly displayed, we took the average of the sub-pixels/samples of a pixel and used 
+		that average to determine the color of that pixel. To ensure that points and lines render correctly with the implementation of 
+		supersampling, we modified the fill_pixel method to account for the new sizing of the modified sample_buffer as to not supersample these points and lines. Thus the rasterization 
 		pipeline was modified in the following ways: the fill_pixel method was modified to account for supersampling by ensuring that points 
 		and lines were not supersampled, the rasterize_triangle method was modified to implement supersampling (sample_buffer was first filled 
 		out as opposed to simply just drawing pixels to the frame with the fill_pixel method), the set_sample_rate method was modified to 
 		account for the change in size of the sample_buffer array due to now needing to account fort supersampling (from a size of 
 		width * height to a size of width * height * sampling_rate), the same modification was done for the set_framebuffer_target 
-		method, and lastly the resolve_to_framebuffer method was modified by taking the average of the sub-pixels of a specific pixel and 
+		method, and lastly the resolve_to_framebuffer method was modified by taking the average of the sub-pixels/samples of a specific pixel and 
 		then setting the color of the display pixels to that average. Supersampling can be very useful in computer graphics as it can take 
 		care of aliasing; getting rid of jaggies and making the overall photo/picture look more sharp. This is what was done with the 
-		triangles (test 4) as it got rid of jaggies that were visible and made the triangles have more defined edges. 
+		triangles (test 4) as it got rid of jaggies that were visible and made the triangles have more defined and smooth edges. 
 
 
 		<div style="display: flex; flex-direction: column; align-items: center;">
@@ -135,7 +135,7 @@
 		We can see that when we have a sampling rate of 1, there are a lot of jaggies and gaps within the triangles. 
 		When we increase our sampling rate to 4, we see that the jaggies are less visible and the gaps disappear. This is a result of 
 		having more samples per pixel as now we can more accurately see whether that sample is within our bounds of the triangle. With these 
-		more accurate samples we can then take the average of the color of the sub-pixels and make that the color of the actual pixel. This is why 
+		more accurate samples we can then take the average color of these sub-pixels/samples and set that to the color of the actual pixel. This is why 
 		with a sample rate of 4 we can see that some of the pixels have changed to a different shade of its orignal color. With a sample rate of 
 		16, we can see that there is still some blur but as well as this parts of the triangle that were blurred have been slightly less blurred 
 		and as a result it makes the shape of the triangle stand out more. 
@@ -145,7 +145,7 @@
 
 
 		<h2>Task 3: Transforms</h2>
-		With the implementation of translate, scale, and rotate functions we created a cubeman that is supposed to be waving his left arm. 
+		With the implementation of the translate, scale, and rotate functions we created a cubeman that is supposed to be waving his left arm. 
 		He has his right arm down and his head is not supposed to be rotated.
 
 		<div style="display: flex; flex-direction: column; align-items: center;">
@@ -166,8 +166,8 @@
 		Barycentric coordinates are a way of describing points within a triangle based on the triangle's vertices by utilizing the 
 		weights of these vertices on that point. As opposed to using the coordinate system of (x,y), barycentric coordinates represent a 
 		point as (⍺, 𝛽, 𝛾). These represent the weight that the specific vertex has on the point (⍺ corresponds to the weight of the 
-		first vertex, 𝛽 is the weight of the second vertex, and 𝛾 is the weight of the third vertex. With these weights, we can create 
-		certain constraints such as the fact that ⍺ + 𝛽 + 𝛾 = 1. With this constraint, we know that at a vertex of the triangle, only 
+		first vertex, 𝛽 is the weight of the second vertex, and 𝛾 is the weight of the third vertex). With these weights, we can create 
+		certain constraints such as the fact that ⍺ + 𝛽 + 𝛾 = 1, otherwise that point would not be within the triangle. With this constraint, we know that at a vertex of the triangle, only 
 		one weight will be 1 and the others will be 0, if a point is inside the triangle all weights must be between 0 and 1, and if the 
 		point is outside the triangle then at least one of the weights will be negative. With barycentric coordinates, we can interpolate 
 		across triangles. This can then be used to smoothly blend values such as color across the triangles as seen below. 
@@ -193,17 +193,18 @@
 		<br>
 
 		<h2>Task 5: "Pixel sampling" for texture mapping</h2>
-		When doing pixel sampling, we retrieve color values of a pixel from a texture image that is mapped onto a surface from the screen space. 
-		These textures are stored as a grid of pixels, known as texels, which differ from the grid of pixels on the screen which is why we need 
+		With pixel sampling, we retrieve color values of a pixel from a texture image/grid that is then mapped onto a surface from the screen space. 
+		These textures are stored as a grid of pixels, known as texels, which typically differ from the grid of pixels on the screen which is why we need 
 		to interpolate our screen pixels to find the corresponding texel coordinates. These new coordinates from interpolation are of the form 
 		(u, v). Within our implementation, we implemented the nearest-pixel sampling method as well as the bilinear sampling method. Looking at 
-		our implementation of nearest-pixel sampling, we select the color of the pixel that is nearest to the texture coordinate, (u, v), we get 
+		our implementation of nearest-pixel sampling, we select the color of the pixel that is nearest to the texture coordinate, (u, v), which is derived 
 		from the interpolation of the pixel coordinate, (x, y). This means that we round whatever texel coordinate (u, v) we get from interpolation 
-		and then return the corresponding color at these rounded coordinates which we use as indices to access said color. To find this color we used 
+		and then return the corresponding color at these rounded coordinates which we are used as indices to access said color within our texel grid. To find this color we used 
 		the get_texel method of the MipLevel struct and used the rounded (u, v) values as inputs. Looking at our implementation of bilinear sampling, we 
-		find the weighted average of the 4 nearest texels of the given texel coordinate (which we calculated in rasterize_textured_triangle). To find the 
-		weighted average, we first calculate two horizontal lerps (linear interpolations) of the top two texel colors and the bottom two texel colors. Then we 
-		calculate a lerp with these new color values in the y-direction. This final texel color is what we return in our method. Along with the implementation of 
+		find the weighted average of the 4 nearest texels of the given texel coordinate (which we calculated in rasterize_textured_triangle). To find the 4 nearest texels, 
+		we just floor and ceil the texel coordinate that was calculated in rasterize_textured_triangle. To find the weighted average, we first calculate 
+		two horizontal lerps (linear interpolations) of the top two texel colors and the bottom two texel colors. Then we calculate a lerp with these new color 
+		values in the y-direction. This final texel color is what we return in our method. Along with the implementation of 
 		these two methods, we also implemented the rasterize_textured_triangle method which would then utilize these two sampling methods. The logic is very 
 		similar to that of task 4, where we iterate through each pixel within our created bounds and then iterate through each sub-pixel depending on the sampling 
 		rate. Within these iterations, we would still do the line tests to ensure that the pixel is within the bounds of our triangle and we would still calculate 
