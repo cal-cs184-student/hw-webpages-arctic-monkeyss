@@ -36,11 +36,11 @@
 
 		<br>
 		
-		Link to GitHub repository: <a href="https://github.com/cal-cs184-student/sp25-hw2-arctic-monkeys-on-tour">https://github.com/cal-cs184-student/sp25-hw2-arctic-monkeys-on-tour </a>
+		Link to GitHub repository: <a href="https://github.com/cal-cs184-student/hw-webpages-arctic-monkeyss">https://github.com/cal-cs184-student/hw-webpages-arctic-monkeyss</a>
 
 		<figure>
 			<img src="teapot.png" alt="Teapot" style="width:50%"/>
-			<figcaption>You can add images with captions!</figcaption>
+			<figcaption>A really cool teapot!</figcaption>
 		</figure>
 
 		<!--
@@ -48,15 +48,23 @@
 		-->
 
 		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+		We created and used Bezier curves to better understand how models can become smoother with controllable curves. We used these Bezier curves first in the 1st dimension 
+		and then used them to smoothen out models in the 2nd dimensions. We then up-scaled the smoothing of models to the 3rd dimension. To do so we implemented 
+		loop subdivision, in which we further divide a triangle mesh, which would add more detail to the model. We created two new functions, Edge Flip and 
+		Edge Split, to assist us with loop subscaling in the final step. What we found most interesting was the power of Bezier curves being able to map nearly any object.
 
 		<h2>Section I: Bezier Curves and Surfaces</h2>
 
 		<h3>Part 1: Bezier curves with 1D de Casteljau subdivision</h3>
-		De Casteljau’s subdivision algorithm makes up a series of subdivisions that recursively creates linear interpolations between the control points that are specified. The result of running through the algorithm once is a point that lies on the Bezier curve. To implement it we followed the equation: p'<sub>i</sub> which is the next subdivision level and the current subdivision of p<sub>i</sub>.  
+		De Casteljau's subdivision algorithm makes up a series of subdivisions that recursively creates linear interpolations 
+		between the control points that are specified. The result of running through the algorithm is a point that lies 
+		on the Bezier curve. To implement it we followed the equation: p'<sub>i</sub> which is the next subdivision level 
+		and the current subdivision of p<sub>i</sub>.  
 		<br>
 		
 		p'<sub>i</sub> = lerp(p<sub>i</sub>, p<sub>i + 1</sub>, t) = (1 - t) * p<sub>i</sub> + t * p<sub>i + 1</sub> where p<sub>i + 1</sub> is the connecting control point. The value t represents the weight or “influence” of each control point on the final Bezier curve. 
+		<br>
+		<br>
 
 		<!-- <p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p> -->
 		<div style="display: flex; flex-direction: column; align-items: center;">
@@ -106,10 +114,20 @@
 		</div>
 
 		<h3>Part 2: Bezier surfaces with separable 1D de Casteljau</h3>
-		To extend de Casteljau’s algorithm to Bezier surfaces we apply the same logic as task one and first parameterize each row of the control points with the parameter u resulting in one final point. We lerp over those new final single points and now parametrize over v until we have the final point that now lies on the Bezier surface. The result is a Bezier surface that is applied to the teapoint object. 
-
-		To implement this we used the evaluateStep function to output the next subdivision level. Evaluate1D was used to get the final single point on the Bezier line of parameter t and we used the evaluate function to find the point on the surface. So to find this point on the Bezier surface, we first call evaluate which calls evaluate1D on each row of the control points parametrized by u in a for loop and then add these final single points to the vector. With this series of final points which is done through calls to evaluateStep to do the lerps, we then parametrize over v using evaluate 1D to get the final single point that lies on the Bezier surface at the given parameter u and v. 
-				<figure>
+		To extend de Casteljau's algorithm to Bezier surfaces we apply the same logic as task one and first parameterize 
+		each row of the control points with the parameter u resulting in one final point. We lerp over those new final single 
+		points and now parametrize over v until we have the final point that now lies on the Bezier surface. The result is a 
+		Bezier surface that is applied to the teapot object. 
+		<br>
+		<br>
+		To implement this we used the evaluateStep function to output the next subdivision level. Evaluate1D was used to 
+		get the final single point on the Bezier line of parameter t and we used the evaluate function to find the point 
+		on the surface. So to find this point on the Bezier surface, we first call evaluate which calls evaluate1D on each 
+		row of the control points parametrized by u in a for loop and then add these final single points to the vector. 
+		With this series of final points which is done through calls to evaluateStep to do the lerps, we then parametrize 
+		over v using evaluate 1D to get the final single point that lies on the Bezier surface at the given parameter u and v.
+		<br> 
+		<figure>
 			<img src="task_2/teapot_mesh.png" alt="Teapot_mesh" style="width:100%"/>
 			<figcaption>Mesh rendered on teapot using de Casteljau's algorithm</figcaption>
 		</figure>
@@ -117,30 +135,237 @@
 		<h2>Section II: Triangle Meshes and Half-Edge Data Structure</h2>
 
 		<h3>Part 3: Area-weighted vertex normals</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		To find the area-weighted normal vector for a specific vertex position on the mesh, we first traversed through 
+		each edge around that vertex. We did so with very similar logic to that in lecture 8, where we first start at 
+		the halfedge the vertex struct points to, and then iterate over the adjacent edges of the vertex by finding 
+		the twin of the current halfedge, and then finding the next halfedge from the twin. We do so until we circle 
+		back to the original halfedge (the halfedge pointed to in the vertex struct). Within each iteration we 
+		calculate the area-weighted normal vector of each face. To find this normal vector, we first find the current 
+		face we are at by accessing it from the current halfedge we are at in the current iteration, then we find each 
+		vertex of this face by iterating over each halfedge of the current face. To do this, we once again followed 
+		similar logic to that of lecture 8, where we find the halfedge pointed to by the face struct, then iterate 
+		through each next halfedge until we circle back to the original halfedge of the face. Within each of these 
+		inner iterations we add the vertex of the face, accessed from the current halfedge,  into a vector of 3D vectors. 
+		Once these inner iterations are finished and we have all points of the face, we calculate the area-weighted normal 
+		vector by calculating the cross product of the vector A - B and the vector A - C where A is vertex 1, B is 
+		vertex 2, and C is vertex 3. Once we calculate the area-weighted normal vector of each face that shares this 
+		vertex, we add up all these normal vectors. We then divide this summation of all normal vectors by the magnitude 
+		of this summation and return the result, which is the area-weighted normal vector of the specific vertex.
+		<br>
+		<br>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./task_3/withoutPhong.png" width="400px"/>
+				  <figcaption>Teapot without Phong shading.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./task_3/withPhong.png" width="400px"/>
+				  <figcaption>Teapot with Phong shading.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+
 
 		<h3>Part 4: Edge flip</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		We initially drew out the triangle before and after the flips in order to visualize and see where the pointers 
+		would map to. After figuring out what needed to be changed, we mapped out all edges and made sure to assign all 
+		the half edges to their original elements to have references to them before modifying them. We did this for the 
+		half edges, vertices, edges, and faces as each halfedge has all these properties. Then we went and reassigned 
+		all the values based on the schema we drew out and went in order for each half edge property: next(), twin(), 
+		vertex(), edge(), and face(). Even if a value didn't need to get reassigned to a new value, we had it there for reference 
+		and for simplicity. Similarly, we did this for all half edges, vertices, edges, and faces in which we reassigned 
+		them. Finally, we returned the e0 edge that was given with its new updated information.
+		<br>
+		<br>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./task_4/original.png" width="400px"/>
+				  <figcaption>Teapot with no edge flips.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./task_4/twoflips.png" width="400px"/>
+				  <figcaption>Teapot with two edge flips.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./task_4/flippingback.png" width="400px"/>
+				  <figcaption>Teapot with one edge flipped back.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./task_4/alotofflips.png" width="400px"/>
+				  <figcaption>Teapot with a lot of edge flips.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
 
 		<h3>Part 5: Edge split</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		Similar to task 4, we first drew out the before and after of an edge split with each having the appropriate 
+		labels for each element (labels for each halfedge, vertex, edge, and face). This helped us conceptually as 
+		well as knowing what pointers pointed to what. We then stored every face, vertex, edge, and halfedge that 
+		could be changed or was needed after the split. We did not support edge splits at boundaries, so we checked 
+		if either face adjacent to the edge was a boundary. If either was a boundary face we just returned immediately 
+		as described in the spec. If not, we then found the midpoint of the two vertices that are connected by the given 
+		edge. We then created any other new elements that were needed when edge splitting. With our case we created 6 
+		new halfedges, 3 new edges, 2 new faces, and 1 vertex (the midpoint). The new vertex's position was set to the 
+		midpoint. After this, we then moved on to reassigning all of our previous pointers and assigning our new pointer 
+		to the desired element. Once all pointers have been reassigned/assigned, we return the new vertex. Luckily we 
+		did not encounter any bugs while implementing this task... WRONG. When it came time to implementing 
+		task 6, we realized that something was wrong with splitEdge. We tried a lot of things, such as reassigning our 
+		variables every order possible, as we thought maybe there was something wrong with our ordering of reassignments. 
+		It changed the way our upsample function worked at times, but it still didn't fix our issue. We then later realized 
+		that the edge attribute, isNew, is never set to true anywhere, even though we are creating new edges. Once we 
+		realized this, we set the isNew attribute to true for newly created edges that weren't along our current 
+		edge. (edge e6 and e7 in our diagram).
+		<br>
+		<figure>
+			<img src="task_5/task5diagram.png" alt="Edge Split Diagram" style="width:50%"/>
+			<figcaption>Diagram of an edge split</figcaption>
+		</figure>
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./task_5/beforesplits.png" width="400px"/>
+				  <figcaption>Quadball mesh with no edge splits.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./task_5/aftersplits.png" width="400px"/>
+				  <figcaption>Quadball mesh after some edge splits.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./task_5/beforecomb.png" width="400px"/>
+				  <figcaption>Quadball mesh before some edgesplits and flips.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./task_5/aftercomb.png" width="400px"/>
+				  <figcaption>Quadball mesh after some edgesplits and flips.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+
 
 		<h3>Part 6: Loop subdivision for mesh upsampling</h3>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-		<h2>(Optional) Section III: Potential Extra Credit - Art Competition: Model something Creative</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
-		</ul>
+		To implement the loop subdivision scheme, we first calculated the new positions of the old vertices by using 
+		the formula given in the spec, (1 - n *u) * original_position + u * original_neighbor_position_sum. The u 
+		value was calculated by checking if the vertex degree is 3, if it is we set u to 3 / 16, otherwise we set u 
+		to 3 / (8 * n) where n is the degree of the vertex we are currently looking at. This new value was stored in 
+		the vertex's newPosition attribute. We also set these vertex's boolean attribute, isNew, to false, so when we 
+		flipped edges later, we had a way of tracking if the vertex connected by this edge was either new or old.
+		<br>
+		<br>
+		Next we calculated the position of new vertices that would be created when using edge splits. To do so we found the 
+		4 vertices that would impact the position of this new vertex. These included the two vertices that the edge connected 
+		as well as the third vertex that was located on each face that the edge was between (two faces, so two more vertices). 
+		Once we found these vertices, we used the equation given in the spec to calculate the positions of these new 
+		vertices: 3/8 * (A + B) + 1/8 * (C + D) where A = v0-> position, B= v1->position, C= v2 -> position, D = v3->position. 
+		Once this position was calculated, we stored it in the current edge's newPosition attribute so that we could access it 
+		later. Before flipping we also stored the original edges in the mesh in a vector, called oldEdges, so that when we do 
+		split, we only iterate over the original edges, not any new ones. 
+		<br>
+		<br>
+		Finally we began to split every edge in the mesh. We iterated through all the edges in oldEdges and split them, setting 
+		the new vertex's newPosition attribute to that current edge's newPosition. We set the isNew attribute of the newly created 
+		vertex to true. We did so to ensure that all vertices' newPosition were whether they were a new vertex or not. After all 
+		edges that needed to split were split, we iterated over all edges (old and new) to see if we needed to flip them. We first 
+		checked if that edge was new or not (set in our edgeSplit function), if it was a new edge, we then checked if the vertices 
+		connected by that edge were either true or false, but not both, as we only want to flip edges that connect an old and new 
+		vertex. If both these cases passed, we flipped that edge. Finally, with the subdivisions complete, we set every vertex's 
+		position to its newPosition attribute.
+		<br>
+		<br>
+		Some challenges we encountered during debugging were dents that shouldn't appear obscuring the overall shape of the mesh, 
+		the way we fixed this was making sure that when we split our edges, we had a boolean to check that those edges were new 
+		and not old. Another problem which was brought up by TA - Ashley was the fact that Visual Studio might've “truncated” 
+		3/8 and 1/8 to 0 so we explicitly wrote out 0.375 and 0.125 as otherwise the object would just “disappear”. The two 
+		main issues we had were that we hadn't set all of the vertices' newPosition attribute to a value and that some of the 
+		edges' isNew attributes were never set. To find the bug to these issues, we commented out certain steps to see if we 
+		could find the issue. When we just had the splitting of all edges as well as flipping the edges that needed to be flipped, 
+		we saw that there was a problem in which incorrect edges were flipped or some weren't when they needed to be. We fixed 
+		this by modifying our splitEdge function to set the value of isNew to either true or false as described in our write 
+		up for part 5. Once this was fixed, we still found that sometimes our mesh/object would just “disappear”. We read on 
+		Ed that this could be caused by not setting all vertices' newPosition attribute to a value, since at the end we set the 
+		vertices' position to their newPosition attribute. We saw that this happened when we were splitting edges. We had been 
+		setting the new vertex's position to the current edge's newPosition when we should have been setting the vertex's 
+		newPosition attribute. 
+		<br>
+		<br>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./task_6/zeroloop.png" width="400px"/>
+				  <figcaption>Torus mesh with no loop subdividing.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./task_6/oneloop.png" width="400px"/>
+				  <figcaption>Torus mesh after one loop subdividing.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./task_6/twoloop.png" width="400px"/>
+				  <figcaption>Torus mesh after two loop subdividing.</figcaption>
+				</td>
+			  </tr>
+			</table>
 		</div>
+		<br>
+		After loop subdivision, we noticed that sharp corners and edges get smoothened out. We think this is a result of the 
+		new positions of these vertices at these corners being based off the weighted average of the surrounding vertex positions. 
+		We think that if we pre-split some edges near these corners, the smoothing will be less as there are now closer vertices 
+		to these corners. 
+		<br>
+		<br>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./task_6/preprocess.png" width="400px"/>
+				  <figcaption>Cube mesh after being preprocessed with 0 loop subdivisions.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./task_6/preprocess1.png" width="400px"/>
+				  <figcaption>Cube mesh after being preprocessed with 1 loop subdivision.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./task_6/preprocess2.png" width="400px"/>
+				  <figcaption>Cube mesh after being preprocessed with 2 loop subdivisions.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./task_6/preprocess3.png" width="400px"/>
+				  <figcaption>Cube mesh after being preprocessed with 3 loop subdivisions.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./task_6/preprocess4.png" width="400px"/>
+				  <figcaption>Cube mesh after being preprocessed with 4 loop subdivisions.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<br>
+		To preprocess, we just split the edge that was going through every face of the cube. So instead of one edge going through 
+		each edge there were now 4. With this change, we can see that the mesh becomes more symmetrical after loop subdividing. 
+		We believe these preprocessing changes helped with making the mesh more symmetrical as now there were more vertices 
+		closer to each corner of the cube. With there being closer vertices, the weighted average calculated to find the new 
+		position of these corners would not be as obscure as before, as the values would be smaller since they are closer to each 
+		other. This would prevent the unsymmetrical shape produced when there is no preprocessing done.
+
+
+
 	</body>
 </html>
