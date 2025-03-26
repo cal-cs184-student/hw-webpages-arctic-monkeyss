@@ -28,16 +28,17 @@
 	<body>
 		<div class="container">
 		<h1>CS184/284A Spring 2025 Homework 3 Write-Up</h1>
-		<div style="text-align: center;">Names: </div>
+		<div style="text-align: center;">Names: Nathan Ortega, Erix Xie-McCarthy </div>
 
 		<br>
 
-		Link to webpage: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
-		Link to GitHub repository: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
+		Link to webpage: <a href="https://cal-cs184-student.github.io/hw-webpages-arctic-monkeyss/">https://cal-cs184-student.github.io/hw-webpages-arctic-monkeyss</a>
+		<br>
+		Link to GitHub repository: <a href="https://github.com/cal-cs184-student/hw-webpages-arctic-monkeyss">https://github.com/cal-cs184-student/hw-webpages-arctic-monkeyss</a>
 		
 		<figure>
 			<img src="cornell.png" alt="Cornell Boxes with Bunnies" style="width:70%"/>
-			<figcaption>You can add images with captions!</figcaption>
+			<figcaption>Bunnies!</figcaption>
 		</figure>
 
 		<!--
@@ -45,62 +46,486 @@
 		-->
 
 		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+		With this homework, we implemented core methods and techniques necessary for a physics-based rendering pipeline. These methods/techniques 
+		ranged from creating light rays to implementing specific techniques used to optimize the rendering of these scenes with both direct and 
+		global illumination, which we also implemented ourselves. 
+
 
 		<h2>Part 1: Ray Generation and Scene Intersection</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		Task 1: For generating our rays from image space to camera space and then finally to world space we first used the normalized image 
+		coordinates given and then converted them to camera space with the basis that the left corner is (-tan(hFov/ 2), -tan(hFov/ 2), -1). 
+		We used the equations, (2 * x - 1) * tan(radians(hFov) / 2)  and (2 * y - 1) * tan(radians(vFov) / 2), which maps normalized coordinates 
+		from range 0 to 1 to our designated new basis which is aforementioned (in this case image space coordinates to camera space coordinates). 
+		We then create a new Vector3D with these newly derived camera space coordinates. We then use the camera-to-world rotation matrix to transform 
+		this newly created vector to world space to find the ray that is needed. We make a normalization of our world direction vector and return 
+		this direction in a new ray called worldRay with an origin of pos (the position of the camera position in world space). Before doing so, 
+		we also set the attributes of worldRay.min_t and max_t to nClip, fClip respectively. This allows us to set a bound for the camera space. 
+		<br>
+		Task 2: To generate the pixel samples, we take in an (x, y) point and sample over the average of ns_aa samples. To do so, we iterated 
+		over all these samples in a for loop where we generated a random_xy position with gridSampler-> getSample() and used it to add a random 
+		value between 0-1 from random_xy and normalized it over sampleBuffer.width. We did the same thing for y to get a new Ray that is randomly 
+		generated over the plane, aka using the Monte Carlo estimator. We used est_randiance_global_illumination on the new Ray to generate a color 
+		that is added to a final vector. Once all the iterations are completed we divide that final array by the num_samples to get the final color 
+		(as we want an average of all these samples) and update that pixel in the sampleBuffer with this new color. 
+		<br>
+		Task 3: For the intersect method of ray-triangle intersection, we had to check several conditions to see if an intersection exists between 
+		a triangle and input ray. We based our implementation on the Moller Trumbore Algorithm and substituted the variables for the Edges and Cross 
+		Products. We compared the alpha ( 1 - b1- b2), beta (b1), and gamma (b2) values to check if those values are below 0 or above 1, if it is, 
+		we return false. We got our t value by taking the dot product of our cross edge (in this case being cross(S, edge_1) where S is ray_origin - P1) 
+		and edge_2  and dividing that by the dot product of edge_1 and S1 (which is cross(ray_direction, edge_2)) following the Moller Trumbore Algorithm. 
+		If our alpha, beta, and gamma values are valid we set the t_value calculated to the new ray.max_t. Then we populate the values that intersect with 
+		the new t_val, the BSDF, the normal vector at this intersection (calculated using the normalized equation given in the spec), and the primitive that 
+		the ray intersects (which in this case is a triangle). 
+		<br>
+		Task 4: With somewhat similar logic to task three, we implemented ray-sphere intersection, except the derivation for the intersection was based on 
+		the slide given in lecture that specifies the equations for ray intersections with the sphere. The t value at the point of intersection is equal 
+		to the quadratic formula, and the variables a, b, and c can be derived using information from our ray and the sphere. To make sure that we update 
+		the corresponding point on the sphere appropriately, we made sure to check between the three cases. First, if the ray completely misses the sphere, 
+		we return false. Second, if the ray intersects the sphere at a single point, then we update t_max to that t point and lastly, if there are two 
+		intersections that go through the sphere, we would check between both of those points and take the lower t value and update t_max to that lower value. 
 
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
+
+		
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="./part1/banana.png" width="400px"/>
+				  <figcaption>Banana with normal shading.</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="./part1/CBempty.png" width="400px"/>
+				  <figcaption>Empty Cornell Box with normal shading.</figcaption>
 				</td>
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="./part1/CBspheres.png" width="400px"/>
+				  <figcaption>Cornell Box with spheres with normal shading.</figcaption>
 				</td>
 			  </tr>
 			</table>
 		</div>
 		
+		<br>
+		<br>
 		<h2>Part 2: Bounding Volume Hierarchy</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		Task 1: To construct the BVH, we first create a new bounding box called bbox and expand it based on all the bounding boxes from the primitives given. 
+		Then we create a new BVHNode with bbox and first check if this is a leaf node, meaning that the num_primitives is <= max_leaf_size. If it is, we return 
+		the node as we have found a leaf node of our BVH. If not, we have to split the primitives given with another BVHNode. For our splitting heuristic, we 
+		create another bounding box (centroid_bbox) that extends based on the centroids of all the given primitives' bounding boxes. Now that we have a bounding 
+		box for all the centroids, we split this bounding box into two based on the longest axis (doing so based off the extent of the X, Y, or X axis), dividing 
+		our space most efficiently. Lastly, we determine the exact split point which is based on our split axis, and partition our primitives (using the std::partition 
+		method and using a lambda function to determine which primitive goes to what partition). We then recurse on these two new partitions, setting node->left to 
+		the left partition (primitives whose centroid is less than the split point) and setting node->right to the right partition (primitives whose centroid is 
+		greater than the split point), which will continue and build the nodes left and right when recursing back up. 
+		<br>
+		Task 2: This method takes in a ray with two doubles t0, t1 and updates them if they intersect. We set the t_min = 0, and t_max to infinity and iterated 
+		over the three axes (x, y, z), and calculated the intersection on each axis, based on the lecture slides for ray and axis-aligned intersection equations. 
+		If the order is wrong, as in t_near > t_far, we swap so that they are assigned to the correct values. Then, we take the min entry of all the t_far values 
+		and the max entry of all our t_near values to find our t_min and t_max. If our t_min is greater than t_max we return false; else, we set those values to 
+		t0 and t1 and return true. 
+		<br>
+		Task 3: For these two functions, has_intersection and intersect they both follow similar logic, checking if the node given is empty and if the node doesn't 
+		intersect and returns false. Otherwise, we check if it's a leaf and if it is we return whether that ray and BVH leaf node intersect (checking all primitive 
+		bounding boxes and see if they have an intersection using the method from task 2). Otherwise, if it is not a leaf we recurse on the fact that there is a 
+		left node first to traverse and check till we hit a leaf case and return whether there is an intersection or not and update the Intersection i accordingly. 
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part2/CBlucy.png" width="400px"/>
+				  <figcaption>Cornell Box with statue rendered with BVH acceleration.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part2/cow.png" width="400px"/>
+				  <figcaption>Cow rendered with BVH acceleration.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part2/maxplank.png" width="400px"/>
+				  <figcaption>Rendered with BVH acceleration.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+
+		<br>
+		Rendering Time Analysis: We rendered the above .dae files with and without BVH acceleration and noticed a significant difference in rendering time. 
+		Without BVH acceleration, rendering times were extremely slow (ranging from a minute to two minutes for the .dae files above) which is understandable as we 
+		have to test if a every ray has an intersection with every object in the scene leading to an O(N) complexity per ray (when there are N primitives in 
+		the scene). After we implemented BVH acceleration, rendering times were much quicker (now ranging from 0.5 seconds to 2 seconds). Since the BVH takes the structure 
+		of a binary tree, when testing to see if our ray intersects certain primitives, we can always exclude around half of the primitives in the scene from our search as that 
+		is how we strcutured the BVH to do. As such, as we traverse down our hierarchy, we only search within half of the primitives at that level meaning that each ray has a complexity 
+		of O(logN) where N is the number of primitives in the scene. This time complexity is significantly less than that of O(N) which is why our rendering time decreased so drastically.
+		<br>
+		<br>
 
 		<h2>Part 3: Direct Illumination</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		Task 1: For the DiffuseBSDF:f, we take in the wo and wi vectors and return the reflectance / M_PI, which is the radiance over the irradiance, which, given that we are taking the 
+		incoming light equally in all directions on the hemisphere, is just pi. Additionally in sample_f we assign wi (the unit vector between p and the light source) to sample over the 
+		specified distribution, the pdf (probability density function) which is the cos of (wi) over pi and we return those on a call to f(wo, (*wi)) to get the overall diffusion over the 
+		area. 
+		<br>
+		Task 2: To implement zero_bounce_radiance, we returned the emission of the intersection.bsdf by using its get_emission() method. In est_radiance_global_illumination, we make sure to 
+		check if the bounding volume hierarchy intersects with the ray and if it does, then we set L_out to zero_bounce_radiance. 
+		<br>
+		Task 3: To implement the first iteration of direct lighting with uniform hemisphere sampling we iterated over the number of samples in the scene and converted to world coordinates 
+		with the o2w matrix (object to world) from there we used that to find the inverse ray which is the ray from the object to the light. We use it to see if it intersects with a light source. 
+		Otherwise, we don't add this. We use the EPS_F for some offset error and set the inv_ray.min_t to this value. Then, we check if this inverse ray intersects with anything in the scene 
+		and if it does, we then check if the object it intersected with is emissive. If both these cases pass, we increment L_out by the diffuse_l vector (calculated using the bsdf:f function) 
+		times cos_sample (the dot product of the normal vector/z -value (0, 0, 1) vector because we know that the cosine of the angle between two unit vectors is equal to the dot product so we 
+		have the angle at which the light hits) times the emission of the primitive at the intersection. After iterating over all the samples, we then divide L_out by the number of samples * the 
+		area over the hemisphere to get the final color value. 
+		<br>
+		Task 4: For direct lighting by importance sampling, we follow a similar procedure. However, because the emission of lights is non-uniform, we have to sample and iterate over all the lights 
+		and again iterate over the num_samples but check if it is a delta light source first and only sampling once; otherwise, we sample over the number of samples area light (ns_area_light). 
+		This allows us to save some computation time. Additionally, we also check if wi_local.z is less than 0, and if it is, we continue to the next iteration. We only check in the z-axis because 
+		we would then know that the light is behind the surface. If we know it's not behind, we calculate the shadow ray (where the shadow_ray is that described in the spec) and check if it intersects 
+		the bvh. If it does intersect, it means we hit an object blocking the path so we do nothing, if it doesn't that means we have a hit so we use the similar logic as task 3 and calculate the color 
+		value over the pdf with diffuse * emitted * cos_sample / pdf and add to the L_out color value. At the end of the inner for loop over the samples we take L_out and divide it by the number of 
+		samples and return it after its gone through all the light sources. 
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part3/bunny_16_8.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with direct lighting by importance sampling. 16 camera rays per pixel and 8 samples per area light.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part3/bunny_32_32.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with direct lighting by importance sampling. 32 camera rays per pixel and 32 samples per area light.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part3/bunny_64_32.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with direct lighting by importance sampling. 64 camera rays per pixel and 32 samples per area light.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part3/CBbunny_H_16_8.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with direct lighting by uniform hemisphere sampling. 16 camera rays per pixel and 8 samples per area light.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part3/CBbunny_H_32_32.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with direct lighting by uniform hemisphere sampling. 32 camera rays per pixel and 32 samples per area light.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part3/CBbunny_H_64_32.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with direct lighting by uniform hemisphere sampling. 64 camera rays per pixel and 32 samples per area light.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<br>
+
+		Uniform Hemisphere vs non-uniform Hemisphere: Comparing the two different methods for direct illumination, a clear difference is the amount of noise that can be seen. When looking at 
+		uniform hemisphere sampling, we can clearly see that there is a good amount of noise even when we have a high amount of camera rays per pixel. We believe this is because with uniform sampling 
+		it distributes these rays evenly across all directions. As a result this leads to a high variance when light sources are sparse creating this noise as many of these rays contribute a small amount 
+		to the final pixel color. On the other hand, when looking at importance sampling, there is way less noise even at low amounts of camera rays per pixel. Since importance sampling prioritizes rays pointing 
+		towards actual light sources, there is way less variance leading to less noise.
+
+		<br>
+		<br>
+		
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part3/dragon_1_1.png" width="400px"/>
+				  <figcaption>Dragon rendered with direct lighting by importance sampling. 1 camera ray per pixel and 1 sample per area light.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part3/dragon_1_4.png" width="400px"/>
+				  <figcaption>Dragon rendered with direct lighting by importance sampling. 1 camera ray per pixel and 4 samples per area light.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part3/dragon_1_16.png" width="400px"/>
+				  <figcaption>Dragon rendered with direct lighting by importance sampling. 1 camera ray per pixel and 16 samples per area light.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part3/dragon_1_64.png" width="400px"/>
+				  <figcaption>Dragon rendered with direct lighting by importance sampling. 1 camera ray per pixel and 64 samples per area light.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<br>
+		<br>
+		
 
 		<h2>Part 4: Global Illumination</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		Task 1: To implement the overall global illumination task we first implement diffuseBSDF:sample_f which takes in an angle out and pointers to the angle in and the pdf. We set the incoming angle 
+		to the sampler.get_sample(), and set the pdf as the cos_theta of the incoming angle divided by pi. Lastly, we return the evaluation of the bsdf by using our f method. 
+		<br>
+
+		Task 2: For est_radiance_global_illumination we check if the bvh box intersects if it doesn't we return a Vector3D (0, 0, 0). Then, we check if the ray’s max_ray_depth is 0, if it is we hit the 
+		zero bounce case, if not, we then check if isAccumBounces is set to true, if it is, we return the summation of zero bounce + at least one bounce, else (we know its not cumulative) so we just 
+		return at least once bounce. 
+
+		Next, for at_least_ one_bounce_radiance we have to implement this recursively to call itself based on the hit point and direction of the ray incoming and trace to the sample direction. To do 
+		this, we check if the ray depth is equal to or less than 0 and if there aren’t cumulative bounces, meaning we have hit the zero bounce radiance case and return that; otherwise, we check if 
+		the depth is one and return the one bounce radiance. If the depth is greater than 1 then we know we must recurse to the next hit point. So we calculate the world coordinates for the input 
+		angle and have a new ray instantiated with attributes of Ray(hit_p + offset, the EPS_F, * newly calculated input angle), we set the depth to r.depth - 1 for recursion and the min_t to EPS_F. 
+		Then, we check that the ray intersects the bvh, and if it doesn’t, we return the result (the one bounces radiance). Otherwise, we calculate and recurse, allowing us to continue calculating 
+		the new rays. We set this value to indirect_illum. Then, when we recurse back up we calculate the indirect lighting which is the diffuse * indirect_illum (recursive case) * cos_sample 
+		(calculated from the dot product of the input angle and vector (0, 0, 1) given as normal to the vector since we know its orthonormal) all over the pdf. We called this value the indirect 
+		contribution. Then we add this value to the vector out only if the bounces are cumulative otherwise, we just return that.
+		
+		<br>
+		Task 3: Given that max_ray depth recursion stopping has high computational costs, we implemented Russian Roulette to help randomize and have a probabilistic terminating factor. As per the 
+		hint we used a terminating probability of 0.4 and in at_least_one_bounce_radiance added a condition after instantiating the new ray if the depth of the ray is below and the coin_flip 
+		function that returns true with our inserted 0.4 probability we just return the one_bounce_radiance otherwise we created a double to calculate the continuation probability if the ray 
+		depth < max_ray depth then its the formula (1 / 1 - terminating probability) otherwise we return 1. The only other thing that changed from task 2 was that when it came to determining 
+		the indirect contribution, we multiplied the pdf by our newly computed probability result. 
+
+
+		<br>
+		<br>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part4/point1/CBbunny_1024_1_isAccum_3.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination. 1024 camera rays per pixel, 1 sample per area light, max ray depth of 3 and isAccumBounces set to true.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part4/point1/CBspheres_1024_1_isAccum_3.png" width="400px"/>
+				  <figcaption>Cornell Box with spheres rendered with global illumination. 1024 camera rays per pixel, 1 sample per area light, max ray depth of 3 and isAccumBounces set to true.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part4/point1/dragon_1024_1_isAccum_3.png" width="400px"/>
+				  <figcaption>Dragon rendered with global illumination. 1024 camera rays per pixel, 1 sample per area light, max ray depth of 3 and isAccumBounces set to true.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part4/point1/walle_1024_1_isAccum_3.png" width="400px"/>
+				  <figcaption>Wall-E rendered with global illumination. 1024 camera rays per pixel, 1 sample per area light, max ray depth of 3 and isAccumBounces set to true.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+
+		<br>
+		<br>
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part4/point2/direct_bunny_1024_8_4.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with only direct illumination. 1024 camera rays per pixel, 8 samples per area light, max ray depth of 4 and isAccumBounces set to true.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part4/point2/indirect_bunny_1024_8_4.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with only indirect illumination. 1024 camera rays per pixel, 8 samples per area light, max ray depth of 4 and isAccumBounces set to true.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+
+		<br>
+		<br>
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part4/point3/CBbunny_1024_1_isAccum_0.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination. 1024 camera rays per pixel, 1 sample per area light, max ray depth of 0 and isAccumBounces set to true.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part4/point3/CBbunny_1024_1_notisAccum_0.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination. 1024 camera rays per pixel, 1 sample per area light, max ray depth of 0 and isAccumBounces set to false.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part4/point3/CBbunny_1024_1_isAccum_1.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination. 1024 camera rays per pixel, 1 sample per area light, max ray depth of 1 and isAccumBounces set to true.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part4/point3/CBbunny_1024_1_notisAccum_1.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination. 1024 camera rays per pixel, 1 sample per area light, max ray depth of 1 and isAccumBounces set to false.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part4/point3/CBbunny_1024_1_isAccum_2.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination. 1024 camera rays per pixel, 1 sample per area light, max ray depth of 2 and isAccumBounces set to true.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part4/point3/CBbunny_1024_1_notisAccum_2.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination. 1024 camera rays per pixel, 1 sample per area light, max ray depth of 2 and isAccumBounces set to false.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part4/point3/CBbunny_1024_1_isAccum_3.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination. 1024 camera rays per pixel, 1 sample per area light, max ray depth of 3 and isAccumBounces set to true.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part4/point3/CBbunny_1024_1_notisAccum_3.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination. 1024 camera rays per pixel, 1 sample per area light, max ray depth of 3 and isAccumBounces set to false.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part4/point3/CBbunny_1024_1_isAccum_4.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination. 1024 camera rays per pixel, 1 sample per area light, max ray depth of 4 and isAccumBounces set to true.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part4/point3/CBbunny_1024_1_notisAccum_4.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination. 1024 camera rays per pixel, 1 sample per area light, max ray depth of 4 and isAccumBounces set to false.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part4/point3/CBbunny_1024_1_isAccum_5.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination. 1024 camera rays per pixel, 1 sample per area light, max ray depth of 5 and isAccumBounces set to true.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part4/point3/CBbunny_1024_1_notisAccum_5.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination. 1024 camera rays per pixel, 1 sample per area light, max ray depth of 5 and isAccumBounces set to false.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+		<br>
+		Looking at m=2 and m=3 when isAccumBounces is false, we can see that the image is starting to get darker and as well as this, there is some color bleeding starting to occur (sides of the bunny). 
+		Compared to rasterization, this color bleeding would not occur as it only utilizes direct illumination. Thus, the rendered images have an enhanced sense of realism due to the accurate shading and color 
+		bleeding which could not be acheived by direct illumination (rasterization).
+
+		<br>
+		<br>
+
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part4/point4/bunny_1024_8_rr_0.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination and Russian Roulette termination. 1024 camera rays per pixel, 8 samples per area light, max ray depth of 0 and isAccumBounces set to true.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part4/point4/bunny_1024_8_rr_1.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination and Russian Roulette termination. 1024 camera rays per pixel, 8 samples per area light, max ray depth of 1 and isAccumBounces set to true.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part4/point4/bunny_1024_8_rr_2.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination and Russian Roulette termination. 1024 camera rays per pixel, 8 samples per area light, max ray depth of 2 and isAccumBounces set to true.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part4/point4/bunny_1024_8_rr_3.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination and Russian Roulette termination. 1024 camera rays per pixel, 8 samples per area light, max ray depth of 3 and isAccumBounces set to true.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part4/point4/bunny_1024_8_rr_4.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination and Russian Roulette termination. 1024 camera rays per pixel, 8 samples per area light, max ray depth of 4 and isAccumBounces set to true.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part4/point4/bunny_1024_8_rr_100.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination and Russian Roulette termination. 1024 camera rays per pixel, 8 samples per area light, max ray depth of 100 and isAccumBounces set to true.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+
+		<br>
+		<br>
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part4/point5/walle_1_4_isAccum_4_rr.png" width="400px"/>
+				  <figcaption>Wall-E rendered with global illumination and Russian Roulette termination. 1 camera ray per pixel, 4 samples per area light, max ray depth of 4 and isAccumBounces set to true.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part4/point5/walle_2_4_isAccum_4_rr.png" width="400px"/>
+				  <figcaption>Wall-E rendered with global illumination and Russian Roulette termination. 2 camera rays per pixel, 4 samples per area light, max ray depth of 4 and isAccumBounces set to true.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part4/point5/walle_4_4_isAccum_4_rr.png" width="400px"/>
+				  <figcaption>Wall-E rendered with global illumination and Russian Roulette termination. 4 camera rays per pixel, 4 samples per area light, max ray depth of 4 and isAccumBounces set to true.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part4/point5/walle_8_4_isAccum_4_rr.png" width="400px"/>
+				  <figcaption>Wall-E rendered with global illumination and Russian Roulette termination. 8 camera rays per pixel, 4 samples per area light, max ray depth of 4 and isAccumBounces set to true.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part4/point5/walle_16_4_isAccum_4_rr.png" width="400px"/>
+				  <figcaption>Wall-E rendered with global illumination and Russian Roulette termination. 16 camera rays per pixel, 4 samples per area light, max ray depth of 4 and isAccumBounces set to true.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part4/point5/walle_64_4_isAccum_4_rr.png" width="400px"/>
+				  <figcaption>Wall-E rendered with global illumination and Russian Roulette termination. 64 camera rays per pixel, 4 samples per area light, max ray depth of 4 and isAccumBounces set to true.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part4/point5/walle_1024_4_isAccum_4_rr.png" width="400px"/>
+				  <figcaption>Wall-E rendered with global illumination and Russian Roulette termination. 1024 camera rays per pixel, 4 samples per area light, max ray depth of 4 and isAccumBounces set to true.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+
+		<br>
+		<br>
+
+
 
 		<h2>Part 5: Adaptive Sampling</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		Adaptive Sampling is a way of sampling in which the amount of samples per pixel varies depending on how fast the pixels converge, allowing for the concentration of samples at specific parts of 
+		the image, therefore, not having uniform sampling throughout the image. With our implementation, it is very similar to that of Part 1, Task 2 but instead, we now have the check to see if the 
+		pixels convergence is less than or equal to the maxTolerance times the mean. To implement these changes, we first created three new variables to store s1, s2, and the total samples we've have 
+		iterated through so far (samples_reached). Within each iteration of our samples, we calculate the illuminance of our radiance by using the illum() method and then update our s1, s2, and samples_reached 
+		accordingly (based off spec). We only want to check a pixel's convergence every samplesperBatch so we have a checker to see if we are at a multiple of samplesperBatch, and if so, we then calculate 
+		the mean, variance, standard deviation, and then the variable I based off the spec and check if the value of I is less than or equal to the maxTolerance times the mean. If it is, we break the for 
+		loop and update our final_vector, sampleBuffer, and sampleCountBuffer accordingly.
 
-		<h2>(Optional) Part 6: Extra Credit Opportunities</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part5/adapt_bunny.png" width="400px"/>
+				  <figcaption>Cornell Box with bunny rendered with global illumination. 2048 camera rays per pixel, 1 sample per area light, max ray depth of 5, maxTolerance of 0.05, and samplesperBatch of 64.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part5/adapt_bunny_rate.png" width="400px"/>
+				  <figcaption>Sampling rate of figure to the left.</figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="./part5/adapt_spheres.png" width="400px"/>
+				  <figcaption>Cornell Box with spheres rendered with global illumination. 2048 camera rays per pixel, 1 sample per area light, max ray depth of 5, maxTolerance of 0.05, and samplesperBatch of 64.</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="./part5/adapt_spheres_rate.png" width="400px"/>
+				  <figcaption>Sampling rate of figure to the left.</figcaption>
+				</td>
+			  </tr>
+			</table>
+		</div>
+
 		
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
-		</ul>
+		
 		</div>
 	</body>
 </html>
