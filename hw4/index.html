@@ -249,7 +249,12 @@
 		<h2>Part 5: Shaders</h2>
 		A shader gives a schema on how to shade and shape each surface or model appropriately. Different shading frequencies and types can give the overall object a distinct and unique appearance. A shader includes lighting, color, finish, and texture. A vertex shader allows for transformations of the different vertex positions in space allowing to calculate per-vertex values which are inputted into the fragment shader which applies lighting, textures, and pixel effects outputting a final color for the pixel. They work together directly by designating different tasks that get sent down the graphics pipeline. The Vertex works to prep and process the geometric information while the fragment uses that data to calculate the per-pixel final color. 
 
-		
+		<br>
+	</br>
+	<br>
+	</br>
+	The Blinn-Phong shading model breaks up how objects interact with lighting into three separate components. It uses ambient lighting, diffuse reflection, and specular highlights to get the final lighting color. Breaking these down: ambient shading gives the object a base color preventing black shadows which is just the result of multiplying the ambient coefficient by the ambient intensity. Diffuse reflection is the light that spreads across the object surface aka how it “diffuses”. To calculate take the diffuse coefficient multiplied by the illumination and max(0, n*l) where n and l are the normal and unit vector from the light source. This ensures that no light is reflected back.  Lastly, Specular highlights simulate the intensity of light reflecting on surfaces especially those with “glossy” materials. The equation is the specular coefficient multiplied by the illumination (across its area) and multiplied by max(0, n * h)^p where this calculates the cosine angle between the normal and halfway vector. We take the max of 0 and n*h to make sure that if it exceeds the threshold it doesn’t reflect on the other side. The p is the specular exponent property dependent upon what the material is.  
+
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr> 
