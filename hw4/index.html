@@ -28,19 +28,19 @@
 	<body>
 		<div class="container">
 		<h1>CS184/284A Spring 2025 Homework 4 Write-Up</h1>
-		<div style="text-align: center;">Names: </div>
+		<div style="text-align: center;">Names: Nathan Ortega, Eric Xie-McCarthy</div>
 
 		<br>
 
-		Link to webpage: (TODO) <a href="https://cal-cs184-student.github.io/hw-webpages-arctic-monkeyss/">cs184.eecs.berkeley.edu/sp25</a>
+		Link to webpage:<a href="https://cal-cs184-student.github.io/hw-webpages-arctic-monkeyss/">https://cal-cs184-student.github.io/hw-webpages-arctic-monkeyss</a>
 
 		<br>
 
-		Link to GitHub repository: (TODO) <a href="https://github.com/cal-cs184-student/hw-webpages-arctic-monkeyss">cs184.eecs.berkeley.edu/sp25</a>
+		Link to GitHub repository: <a href="https://github.com/cal-cs184-student/hw-webpages-arctic-monkeyss">https://github.com/cal-cs184-student/hw-webpages-arctic-monkeyss</a>
 
 		<figure>
 			<img src="clothsim.png" alt="Cloth draped over sphere" style="width:70%"/>
-			<figcaption>You can add images with captions!</figcaption>
+			<figcaption>Our homework 4 implementation!</figcaption>
 		</figure>
 
 		<!--
@@ -48,62 +48,313 @@
 		-->
 
 		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+		In this homework, we implemented a real time simulation of cloth using masses and springs as a basis. We implemented methods that would test for collisions with other objects as well as with itself to ensure the cloth simulation was smooth. We also implemented specific shaders to add detail and change the way objects looked.
 
 		<h2>Part 1: Masses and springs</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
+		
+		<!-- <p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p> -->
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="clothsim.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="part1/onlyshearing.png" width="400px"/>
+				  <figcaption>only shearing.</figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="clothsim.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
+				  <img src="part1/noconstraints.png" width="400px"/>
+				  <figcaption>no constraints.</figcaption>
 				</td>
+			
 			  </tr>
+			  <td style="text-align: center;">
+				<img src="part1/all3constraints.png" width="400px"/>
+				<figcaption>All three contraints</figcaption>
+			  </td>
 			  <tr>
-				<td style="text-align: center;">
-				  <img src="clothsim.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="clothsim.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
 				</td>
 			  </tr>
 			</table>
 		</div>
 
 		<h2>Part 2: Simulation via numerical integration</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="part2/task 2 low ks.png" width="400px"/>
+				  <figcaption>ks = 1000 N/m, The effect of changing the spring constant Ks affects the overall stiffness of the cloth. With a very low Ks this means that the force needed for displacement is very low allowing for a lot of movement in the overall cloth simulation with much more ripples. </figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="part2/task 2 high ks.png" width="400px"/>
+				  <figcaption>ks = 50000 N/m, Compared with a high Ks this restricts the movement/displacement of the cloth due to a much higher force needed for the same displacement. 
+				</figcaption>
+				</td>
+			
+			  </tr>
+			  <tr>
+			  <td style="text-align: center;">
+				<img src="part2/task 2 low dens.png" width="400px"/>
+				<figcaption>Density = 1 g/cm ^ 2,  For density:  a very low density has a much lower inertia allowing for and has significantly more stretching due to the force of gravity activating on the cloth. </figcaption>
+			  </td>
+			  
+				<td style="text-align: center;">
+				<img src="part2/task 2 high dens.png" width="400px"/>
+				<figcaption>Density = 100 g/cm ^ 2, Compared with a much higher density, which has less physical deformations allowing for a much stiffer look to it. 
+					 </figcaption>
+			  </td>
+
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				<img src="part2/tastk 2 low damp.png" width="400px"/>
+				<figcaption>Damping = 0%, Damping seems to affect how the simulation is affected by the oscillations and motions and how it dissipates those forces. A very low damping shows lots of movement allowing the cloth to swing back and forth</figcaption>
+			  </td>
+			  <td style="text-align: center;">
+				<img src="part2/task 2 high damp.png" width="400px"/>
+				<figcaption>Damping ~ 80% Compared to a high damping which has much better resistance allowing it to come to rest in much less time than its counterpart</figcaption>
+			  </td>
+			  </tr>
+			</table>
+		</div>
 
 		<h2>Part 3: Handling collisions with other objects</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		For the sphere collision: We iterate over each point mass (pm) in our pointmasses Vector along with a nested for loop iterating over all of our collision objects. We get the distance between the position of the point and the origin of the sphere to see if this pointmass is inside the sphere. If it is, we  extend the path from the pm to the sphere’s surface to find the intersection point and then apply the correction vector to bump it up to the surface of the sphere and set this to be the new position of the pm position. 
+		<br></br>
+		For the planes collision: Similarly like in sphere collision, we iterate over the point mass object in our pointmasses vector with a nested for loop. In the Plane::collide method we check the distance between the point mass and the plane but a key difference is checking which side the plane we lie on. We take the direction between the position of the pointmass and the position on the plane and dot product this with the normal of the plane. We do this with the current position and the last position. We then check if the two positions we just calculated fall on opposite sides meaning that the pointmass goes from one side of the plane to the other. Additionally we also have a fabs(last position) as a rounding offset to see if it's extremely close to the plane and still update the pm position if it is true. The correction vector is calculated as a point a little above the intersection point with a surface offset. We also must adjust our correction vector to be scaled down by friction (1 - friction) to get the final position for the point mass.
+		
+		
+		<br>
+		</br>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr> 
+				<td style="text-align: center;">
+				  <img src="part3/sphereinter500.png" width="400px"/>
+				  <figcaption>The ks = 500 N/m has the cloth drooping the most with the most folds and wrapping much more closer to the sphere as a result. It sways considerably after its drop and folds inward. </figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="part3/sphereinter5000.png" width="400px"/>
+				  <figcaption> ks = 5000 N/m, considerably less stretching but still a decent amount of folds and is loose enough to have a significant amount of swaying after its initial drop. Additionally it conforms less to the ball than 500 but more than 50000.</figcaption>
+				</td>
+			
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+					<img src="part3/sphereinter50000.png" width="400px"/>
+					<figcaption>Lastly, ks = 50000 N/m has the least amount of stretching and bending the cloth seems to maintain more of its original plane shape. There are the lowest amount of folds and additionally least amount of contact with the sphere. 
+					</figcaption>
+				  </td>
+				  <td style="text-align: center;">
+					<img src="part3/planeinter5000.png" width="400px"/>
+					<figcaption>The image above is the base version of the cloth just lying at rest on the plane. 
+					</figcaption>
+				  </td>
+			  </tr>
+			</table>
+		</div>
 
 		<h2>Part 4: Handling self-collisions</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		To implement self-collisions, three methods were created to achieve this. Hash_position takes in a Vector3D of a position in which we then hash so that we can find a unique identifiable box object allowing us to populate the hash table map. To hash we multiply the height and width by three and divide by the respective num_height/width points set these values to h and w. Then we take the floor of each axis of the position by w, h, and t respectively where t is the max(w, h). We multiple these unique floored values by 3 arbitrary numbers and add them up to give a unique_hash. Lastly, we use the fmod value to truncate the points to the nearest 3D box which consists of the unique hash value and w + h + max(w, h). 
+
+		Now with our hash position function we use that to build a spatial map. We iterate over the point_masses and call the hash_position on each individual pm to get a key. If the map can find the key we pushback the pm otherwise we instantiate a new instance of vector<PointMass *> at that map[key] to allocate space to the map. 
+		
+		Lastly, for self_colllide we iterate over all the pm_candidates from creating the map. For each pair between the point mass and candidate point mass that we normalize we check to see if the distance is < 2 * thickness, if it is we then compute the correction vector. The correction_vector for this pair of point masses, once calculated, is added to a final correction vector. We have a total_corrections needed so for every point where this happens we add one to it. So at the very end we can average all these pairwise corrected vectors and divide the final correction by total corrections scaled down by the simulation steps for accuracy . 
+		
+		We also edited our Cloth::simulate to account for self collisions. We first call build_spatial_map to create the map and then iterate through each point mass and call self_collide on it.
+				
+		<br>
+		</br>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="part4/selfcollision1.png" width="400px"/>
+				  <figcaption>self collision part 1 </figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="part4/selfcollision2.png" width="400px"/>
+				  <figcaption>self collision part 2</figcaption>
+				</td>
+			
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				<img src="part4/selfcollision3.png" width="400px"/>
+				<figcaption>self collision part 3</figcaption>
+			  </td>
+			  <td style="text-align: center;">
+				<img src="part4/selfcollision4.png" width="400px"/>
+				<figcaption>self collision part 4</figcaption>
+			  </td>
+
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				<img src="part4/selfcollision5.png" width="400px"/>
+				<figcaption>self collision part 5</figcaption>
+			  </td>
+			  </tr>
+			</table>
+		</div>
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="part4/defaultksdensity.png" width="400px"/>
+				  <figcaption>ks 5000, density 15 -default-</figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="part4/ks_500_density_15.png" width="400px"/>
+				  <figcaption>ks 500, density 15
+					Low ks: Much more deformation due to the low spring constant, it appears to have a much more flowy and loose object shape.
+				  </figcaption>
+				</td>
+
+				<tr>
+					<td style="text-align: center;">
+					<img src="part4/ks_50000_density_15.png" width="400px"/>
+					<figcaption>ks 50000, density 15 
+						much more rigidity and less overall folds in the cloth, resisting the force of it hitting itself, the overall bounces aren’t oscillating as much. 
+					</figcaption>
+				  </td>
+				</tr>
+			
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				<img src="part4/ks_5000_density_150.png" width="400px"/>
+				<figcaption>ks 5000, density 150
+					High density: The overall cloth object is more fluid and has more oscillations bouncing on itself more taking a longer time to come to a resting state.
+				</figcaption>
+			  </td>
+			  <td style="text-align: center;">
+				<img src="part4/ks_5000_density_1.png" width="400px"/>
+				<figcaption>ks 5000, density 1
+					Low density: The cloth is more stiff, folding less times upon itself.	
+				</figcaption>
+			  </td>
+
+			  </tr>
+		
+			</table>
+		</div>
 
 		<h2>Part 5: Shaders</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-
-		<h2>(Optional) Part 6: Extra Credit - Additional cloth simulation features!</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 		
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
-		</ul>
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr> 
+				<td style="text-align: center;">
+				  <img src="part5/phongshadingambient.png" width="400px"/>
+				  <figcaption>Ambient </figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="part5/phongshadingdiffuse.png" width="400px"/>
+				  <figcaption>Diffuse</figcaption>
+				</td>
+			
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+					<img src="part5/phongshadingspecular.png" width="400px"/>
+					<figcaption>Specular</figcaption>
+				  </td>
+				  <td style="text-align: center;">
+					<img src="part5/phongshadingall.png" width="400px"/>
+					<figcaption>Blinn-Phong (All)</figcaption>
+				  </td>
+			  </tr>
+
+			  <tr>
+				<td style="text-align: center;">
+					<img src="part5/custom_texture1.png" width="400px"/>
+					<figcaption>Custom texture on Cloth + Sphere. </figcaption>
+				  </td>
+				  <td style="text-align: center;">
+					<img src="part5/custom_texture2.png" width="400px"/>
+					<figcaption>Cloth with custom texture drooping on top of sphere.</figcaption>
+				  </td>
+			  </tr>
+
+			  <tr>
+				<td style="text-align: center;">
+					<img src="part5/bump_normal2_height2.png" width="400px"/>
+					<figcaption>Bump shader applied to sphere mesh and cloth </figcaption>
+				  </td>
+				  <td style="text-align: center;">
+					<img src="part5/bump1_normal2_height2.png" width="400px"/>
+					<figcaption>Bump shaded cloth on top of sphere</figcaption>
+				  </td>
+			  </tr>
+
+			  <tr>
+				<td style="text-align: center;">
+					<img src="part5/sphere_displace_normal100_height004.png" width="400px"/>
+					<figcaption>Displacement shader on sphere.</figcaption>
+				  </td>
+				  <td style="text-align: center;">
+					<img src="part5/displace_normal100_height004.png" width="400px"/>
+					<figcaption>Displacement shaded cloth on top of sphere.</figcaption>
+				  </td>
+	
+			  </tr>	
+			</table>
 		</div>
+		<br>
+		</br>
+		Comparing bump and displacement mapping, bump simply modifies surface normals to “simulate” a change in the height and width texture to change the appearance of the surface. It uses a tangent-bitangent-normal matrix to transform objects from object space to model space allowing for access to the height map. The overall shape of the original mesh doesn’t change. Compared to displacement mapping, which makes a physical displacement to the actual object through modifying the vertex positions of the original model, we add a scaling factor to the value so that the model is consistent with the geometry of having physical “bumps”.
+
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="part5/bump_sphere16_16_normal2_height2.png" width="400px"/>
+				  <figcaption>Bump shader on sphere with 16 x 16 resolution. </figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="part5/bump_sphere128_128_normal2_height2.png" width="400px"/>
+				  <figcaption>Bump shader on sphere with 128 x 128 resolution.
+				  </figcaption>
+				</td>
+
+				<tr>
+					<td style="text-align: center;">
+					<img src="part5/displacement_sphere16_16_normal2_height004.png" width="400px"/>
+					<figcaption>Displacement shader on sphere with 16 x 16 resolution. 
+					</figcaption>
+				  </td>
+
+				  <td style="text-align: center;">
+					<img src="part5/displacement_sphere128_128_normal2_height004.png" width="400px"/>
+					<figcaption>Displacement shader on sphere with 128 x 128 resolution.
+					</figcaption>
+				  </td>
+				</tr>
+			
+			  </tr>
+			</table>
+		</div>
+		<br>
+	</br> 	
+		By changing the sphere mesh’s coarseness we noticed that with bump shading, there really wasn’t any changes/improvements with the appearance of the sphere. The lighting effects are slightly better at a higher resolution but other than that there are really no differences. We believe this is because the bump shader doesn’t actually change the geometry of the mesh, just the appearance of the surface so it doesnt really rely on the amount of vertices. With displacement shading, there were more differences we observed. With a higher resolution, the displacement was slightly more detailed as compared to the lower resolution. Since the displacement shader does affect the geometry of the mesh this would mean that it does rely on the amount of vertices which is why we see more detail with higher resolution.
+		<br>
+	</br>
+
+	<div style="display: flex; flex-direction: column; align-items: center;">
+		<table style="width: 100%; text-align: center; border-collapse: collapse;">
+		  <tr>
+			<td style="text-align: center;">
+			  <img src="part5/mirror_cubemap.png" width="400px"/>
+			  <figcaption>Mirror Shader Implementation.</figcaption>
+			</td>
+		
+		  </tr>
+		</table>
+	</div>
+
+	</div>
 	</body>
 </html>
